@@ -1,5 +1,4 @@
 import streamlit as st
-from copy import copy
 
 
 # Utility functions
@@ -76,32 +75,35 @@ This simulator will provide the expected profit of buying a property compared to
 """
 
 base_case = {
-    # buy
-    "buy_price": 600_000,
-    "down_payment": 0.2,
-    "buy_closing_fees": 2_000, # in USD
-    "buy_tax": 0.03, # rate
-    "current_rent": 3_000,
-    # maintainance
-    "monthly_condo_fee": 1_055,
-    "monthly_tax": 300,
-    "maintainance": 50,  
-    # loan
-    "annual_interest_rate": .04,
-    "yearly_compound_periods": 6,
-    "loan_life_months": 300,
-    # sell
-    "sell_price": 600_000,
-    "month_of_sale": 24,
-    "sell_closing_fees": 2_000,
-    "sell_realtor_fee": 0.05
+    # buy inputs
+    "buy_price": {"default":600_000, "help":"value of the property at t=0"}, 
+    "down_payment": {"default":0.2, "help": "percentage of the buy price that will be paid in advance"},
+    "buy_closing_fees": {"default":2_000, "help": "amount in USD of the buy-closing-fees"},
+    "buy_tax": {"default":0.03, "help":"percentage of the buy-price that will be paid as tax"},
+    "current_rent": {"default":3_000, "help":"amount of monthly rent in USD that you currently pay"},
+    
+    # maintainance inputs
+    "monthly_condo_fee": {"default":1_055, "help":"monthly amount that should be paid in USD if you own the property"},
+    "monthly_tax": {"default":300, "help":"monthly amount that should be paid in USD if you own the property"},
+    "maintainance": {"default":50, "help":"montlhy amount of maintainance expenses in USD if you own the property"}, 
+    
+    # loan inputs
+    "annual_interest_rate": {"default":.04, "help":"percentage anualized interest rate for the loan"},
+    "yearly_compound_periods": {"default":6, "help":"if semiannual, then 6; if monthly, then 1"},
+    "loan_life_months": {"default":300, "help":"number of months given for the loan"},
+    
+    # sell inputs
+    "sell_price": {"default":600_000, "help":"selling value of the property at the time of the sale"},
+    "month_of_sale": {"default":24, "help":"number of month when the sell takes place"},
+    "sell_closing_fees": {"default":2_000, "help":"amount in USD of the selling closing fees"},
+    "sell_realtor_fee": {"default":0.05, "help":"percentage of the sell price that will be paid to realtor"}
 }
 
 # get inputs
 case = dict()
 for k, v in base_case.items():
     k_label = k.replace("_", " ")
-    case[k] = float(st.text_input(k_label, v))
+    case[k] = float(st.text_input(k_label, v["default"], help=v["help"]))
 
 
 net_income = main(case)
@@ -111,13 +113,6 @@ if net_income > 0:
 else:
     st.write("**No**. According to this simulation, buying is unprofitable.")
 
-
-# variable_inputs = (
-#     dict(sell_price=600_000, month_of_sale=24),
-#     dict(sell_price=600_000, month_of_sale=60),
-#     dict(sell_price=600_000, month_of_sale=120),
-# )
-# cases = [case_gen(base_case, **kwargs) for kwargs in variable_inputs]
 
 
 
